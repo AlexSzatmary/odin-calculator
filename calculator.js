@@ -2,10 +2,7 @@ const OPS = "+-*/".split("");
 let a = 0;
 let op;
 let b;
-
-function isStartingB() {
-  return op !== undefined && b === undefined;
-}
+concatDigits = false;
 
 function add(a, b) {
   return a + b;
@@ -38,12 +35,6 @@ function operate(a, op, b) {
     case "/":
       return divide(a, b);
       break;
-    // case "=":
-    //   return divide(a, b);
-    //   break;
-    // case "AC":
-    //   return divide(a, b);
-    //   break;
     default:
       return "OOF";
       break;
@@ -53,33 +44,50 @@ function operate(a, op, b) {
 function handle_input(key) {
   disp = document.querySelector("#display");
   if ("0" <= key && key <= "9") {
-    if (isStartingB()) {
-      disp.textContent = key;
-      b = +key;
-    } else if (disp.textContent === "0") {
-      disp.textContent = key;
-    } else {
+    if (concatDigits) {
       disp.textContent += key;
+    } else if (b !== undefined && !concatDigits) {
+      disp.textContent = key;
+      concatDigits = true;
+      op = undefined;
+      b = undefined;
+    } else {
+      disp.textContent = key;
+      concatDigits = true;
     }
   } else if (OPS.includes(key)) {
-    if (op !== undefined) {
-      // an op is already entered
-      handle_input("=");
-      op = key;
-    } else {
+    if (op === undefined) {
       a = disp.textContent;
       op = key;
+      concatDigits = false;
+    } else {
+      // an op is already entered
+      console.log(op);
+      console.log(a, op, b);
+      a = operate(+a, op, +disp.textContent);
+      disp.textContent = a;
+
+      op = key;
+      concatDigits = false;
+      console.log(a, op, b);
     }
   } else if (key == ".") {
     // TODO
   } else if (key == "=") {
-    if (op !== undefined && b !== undefined) {
+    if (op !== undefined && !concatDigits && b !== undefined) {
       console.log("=");
       console.log(a, op, b);
+      a = operate(+a, op, +b);
+      disp.textContent = a;
+      // concatDigits = false;
+      console.log(a, op, b);
+    } else if (op !== undefined) {
+      console.log("=");
+      b = disp.textContent;
+      console.log(a, op, +disp.textContent);
       a = operate(+a, op, +disp.textContent);
       disp.textContent = a;
-      op = undefined;
-      b = undefined;
+      concatDigits = false;
       console.log(a, op, b);
     }
   } else if (key == "AC") {
@@ -87,6 +95,7 @@ function handle_input(key) {
     a = 0;
     op = undefined;
     b = undefined;
+    concatDigits = false;
   }
 }
 
