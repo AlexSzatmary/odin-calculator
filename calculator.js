@@ -55,6 +55,20 @@ function handle_input(key) {
       disp.textContent = key;
       concatDigits = true;
     }
+  } else if("." == key) {
+    if (concatDigits && disp.textContent.includes(".")){
+      // pass to not have multiple .
+    } else if (concatDigits) {
+      disp.textContent += key;
+    } else if (b !== undefined && !concatDigits) {
+      disp.textContent = "0.";
+      concatDigits = true;
+      op = undefined;
+      b = undefined;
+    } else {
+      disp.textContent = "0.";
+      concatDigits = true;
+    }
   } else if (OPS.includes(key)) {
     if (op === undefined) {
       a = disp.textContent;
@@ -71,8 +85,6 @@ function handle_input(key) {
       concatDigits = false;
       console.log(a, op, b);
     }
-  } else if (key == ".") {
-    // TODO
   } else if (key == "=") {
     if (op !== undefined && !concatDigits && b !== undefined) {
       console.log("=");
